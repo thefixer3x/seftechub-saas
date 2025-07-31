@@ -1,0 +1,123 @@
+{
+  "version": 2,
+  "name": "seftechub-saas",
+  "alias": ["api.seftechub.com"],
+  "regions": ["iad1", "lhr1", "sfo1"],
+  "build": {
+    "env": {
+      "NODE_VERSION": "20",
+      "NEXT_TELEMETRY_DISABLED": "1",
+      "SKIP_PREFLIGHT_CHECK": "true"
+    }
+  },
+  "buildCommand": "npm run build",
+  "outputDirectory": "out",
+  "installCommand": "npm install",
+  "devCommand": "npm run dev",
+  "framework": "nextjs",
+  "functions": {
+    "app/api/health/route.ts": {
+      "maxDuration": 10
+    },
+    "app/api/contact/route.ts": {
+      "maxDuration": 30
+    }
+  },
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-Content-Type-Options", 
+          "value": "nosniff"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=()"
+        }
+      ]
+    },
+    {
+      "source": "/static/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/_next/static/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/docs",
+      "destination": "https://docs.seftechub.com",
+      "permanent": true
+    },
+    {
+      "source": "/docs/(.*)",
+      "destination": "https://docs.seftechub.com/$1",
+      "permanent": true
+    },
+    {
+      "source": "/dashboard",
+      "destination": "https://dashboard.seftechub.com",
+      "permanent": true
+    },
+    {
+      "source": "/main",
+      "destination": "https://seftechub.com",
+      "permanent": true
+    },
+    {
+      "source": "/api-reference",
+      "destination": "https://docs.seftechub.com/api",
+      "permanent": false
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://api.seftechub.com/api/$1"
+    }
+  ],
+  "env": {
+    "NEXT_PUBLIC_SITE_URL": "https://api.seftechub.com",
+    "NEXT_PUBLIC_API_URL": "https://api.seftechub.com/api",
+    "NEXT_PUBLIC_ENVIRONMENT": "production"
+  },
+  "github": {
+    "enabled": true,
+    "autoAlias": true,
+    "autoJobCancelation": true,
+    "silent": false
+  },
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "crons": [
+    {
+      "path": "/api/health",
+      "schedule": "0 */5 * * * *"
+    }
+  ]
+}

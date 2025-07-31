@@ -1,0 +1,147 @@
+# Netlify Configuration for SefTechHub SaaS Landing Page
+# Flexible deployment configuration with performance optimizations
+
+[build]
+  # Build configuration
+  publish = "out"
+  command = "npm run build"
+  
+  # Environment detection
+  [build.environment]
+    NODE_VERSION = "20"
+    NPM_VERSION = "10"
+    NEXT_TELEMETRY_DISABLED = "1"
+    SKIP_PREFLIGHT_CHECK = "true"
+
+# Build context configurations
+[context.production]
+  command = "npm run build && npm run export"
+  
+  [context.production.environment]
+    NODE_ENV = "production"
+    NEXT_PUBLIC_SITE_URL = "https://api.seftechub.com"
+    NEXT_PUBLIC_API_URL = "https://api.seftechub.com/api"
+    NEXT_PUBLIC_ENVIRONMENT = "production"
+
+[context.deploy-preview]
+  command = "npm run build && npm run export"
+  
+  [context.deploy-preview.environment]
+    NODE_ENV = "production"
+    NEXT_PUBLIC_SITE_URL = "$DEPLOY_PRIME_URL"
+    NEXT_PUBLIC_API_URL = "$DEPLOY_PRIME_URL/api"
+    NEXT_PUBLIC_ENVIRONMENT = "preview"
+
+[context.branch-deploy]
+  command = "npm run build && npm run export"
+  
+  [context.branch-deploy.environment]
+    NODE_ENV = "production"
+    NEXT_PUBLIC_SITE_URL = "$DEPLOY_PRIME_URL"
+    NEXT_PUBLIC_API_URL = "$DEPLOY_PRIME_URL/api"
+    NEXT_PUBLIC_ENVIRONMENT = "staging"
+
+# Headers for security and performance
+[[headers]]
+  for = "/*"
+  [headers.values]
+    # Security headers
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+    
+    # Performance headers
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=3600"
+
+[[headers]]
+  for = "/api/*"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+# Redirects for SPA routing and API
+[[redirects]]
+  from = "/api/*"
+  to = "https://api.seftechub.com/api/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/docs"
+  to = "https://docs.seftechub.com"
+  status = 301
+
+[[redirects]]
+  from = "/docs/*"
+  to = "https://docs.seftechub.com/:splat"
+  status = 301
+
+[[redirects]]
+  from = "/dashboard"
+  to = "https://dashboard.seftechub.com"
+  status = 301
+
+[[redirects]]
+  from = "/main"
+  to = "https://seftechub.com"
+  status = 301
+
+# Catch-all for client-side routing
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Form handling
+[forms]
+  spam_protection = true
+
+# Edge functions configuration
+[[edge_functions]]
+  function = "api-health-check"
+  path = "/api/health"
+
+[[edge_functions]]
+  function = "analytics-tracker"
+  path = "/*"
+
+# Build processing
+[build.processing]
+  skip_processing = false
+
+[build.processing.css]
+  bundle = true
+  minify = true
+
+[build.processing.js]
+  bundle = true
+  minify = true
+
+[build.processing.html]
+  pretty_urls = true
+
+[build.processing.images]
+  compress = true
+
+# Development settings
+[dev]
+  command = "npm run dev"
+  port = 3000
+  publish = "."
+  autolaunch = false
+
+# Functions directory (if using Netlify Functions)
+[functions]
+  directory = "netlify/functions"
+  
+# Split testing (if needed)
+# [split_testing]
+#   [split_testing.branch_test]
+#     percentage = 50
+#     branches = ["main", "feature-branch"]
