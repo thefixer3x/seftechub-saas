@@ -3,7 +3,9 @@
     "allow": [
       "Bash(npm run build:*)",
       "Bash(npm run lint)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "WebFetch(domain:docs.netlify.com)",
+      "Bash(git -C \"/Users/seyederick/DevOps/_project_folders/lanonasis-maas\" status)"
     ],
     "deny": []
   }
