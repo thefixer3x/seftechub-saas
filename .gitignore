@@ -68,3 +68,4 @@ app/api.backup/
 # Deployment artifacts (generated during deployment)
 DEPLOYMENT_INFO.md
 DEPLOYMENT_CHECKLIST.md
+.kiro/settings/mcp.json
